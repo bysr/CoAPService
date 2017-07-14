@@ -95,7 +95,7 @@ public class PlugtestClient {
                 System.out.println(uri + " reponds to ping");
 
                 // add special interceptor for message traces
-//                EndpointManager.getEndpointManager().getDefaultEndpoint().addInterceptor(new MessageTracer());
+                EndpointManager.getEndpointManager().getDefaultEndpoint().addInterceptor(new MessageTracer());
             }
         }
 
