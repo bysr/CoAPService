@@ -1,0 +1,45 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.2"
+    defaultConfig {
+        applicationId "hipad.coapservice"
+        minSdkVersion 15
+        targetSdkVersion 25
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    packagingOptions {
+
+        exclude 'META-INF/ECLIPSE_.SF'
+        exclude 'META-INF/ECLIPSE_.RSA'
+        exclude 'epl-v10.html'
+        exclude 'notice.html'
+        exclude 'edl-v10.html'
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    testCompile 'junit:junit:4.12'
+
+    /** californium 核心模块，定义了一系列协议栈核心接口，并提供了Coap协议栈的完整实现，*/
+    compile 'org.eclipse.californium:californium-core:2.0.0-M4'
+    /**从core模块剥离的连接器模块，用于抽象网络传输层的接口，使得coap可以同时运行于udp和tcp多种传输协议之上；*/
+    //    compile 'org.eclipse.californium:element-connector:2.0.0-M4'
+    /**californium 的osgi 封装模块；*/
+//    compile 'org.eclipse.californium:californium-osgi:2.0.0-M4'
+}
