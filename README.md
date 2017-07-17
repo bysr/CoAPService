@@ -11,7 +11,7 @@
 
 3. 最有趣的特性要属“*observe*” 设置了。客户端发送GET请求时可以传递一个flag来开启观察者模式(*observation*)。*server*之后会把这个客户端列入特定资源的观察者名单，然后客户端持续监听服务端的响应。它允许我们构建被动接收数据的系统，无论这些数据将在什么时候送达。我们回想到HTTP和*Websocket*的场景，是不是有点像*publisher-subscriber*模式？是不是有点像*Meteor*的*REST for Websocket*。简言之，CoAP既可以单次REST请求，也可以通过*observe*实现实时数据订阅。
 
-> COAP报文格式:[模块说明](http://www.cnblogs.com/littleatp/p/6417567.html)
+> COAP报文格式: [模块说明](http://www.cnblogs.com/littleatp/p/6417567.html)
 
 1. ~.californium-core
 californium 核心模块，定义了一系列协议栈核心接口，并提供了Coap协议栈的完整实现，
