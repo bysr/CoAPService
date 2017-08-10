@@ -22,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mReceiverText = (TextView) findViewById(R.id.text);
+        startCoapService();
     }
 
     @Override
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
         super.onStop();
     }
 
+    /*启动coap服务器*/
     private void startCoapService() {
         startService(new Intent(this, ZHCoapService.class));
     }
@@ -74,4 +76,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
     };
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+
+
+
 }
