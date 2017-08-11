@@ -15,7 +15,6 @@ public class ZHQueryResource extends CoapResource {
 	public ZHQueryResource(Context context,String name) {
 		super(name);
 		mContext=context;
-
 	}
 	
 	@Override
@@ -46,7 +45,7 @@ public class ZHQueryResource extends CoapResource {
 	}
 
 	private void handleRequest(String reqText,String reqQueryString){
-		Logger.d("request2:" + reqText);
+		Logger.d("request2:" + reqQueryString);
 		Intent intent=new Intent(Const.ACTION_COAP_MSG);
 		intent.putExtra(Const.KEY_MSG, reqText+","+reqQueryString);
 		mContext.sendBroadcast(intent);

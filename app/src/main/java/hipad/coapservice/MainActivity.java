@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import hipad.coapservice.cmd.CmdNext;
@@ -14,14 +15,19 @@ import hipad.coapservice.cmd.CmdPause;
 import hipad.coapservice.cmd.CmdPlay;
 import hipad.coapservice.cmd.CmdPrevious;
 import hipad.coapservice.cmd.ICmd;
+import hipad.coapservice.note.INote;
+import hipad.coapservice.note.NoteNormal;
+import hipad.coapservice.note.NoteSub;
 
 public class MainActivity extends AppCompatActivity {
     private TextView mReceiverText;
+    private EditText et_node;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mReceiverText = (TextView) findViewById(R.id.text);
+        et_node = (EditText) findViewById(R.id.et_node);
         startCoapService();
     }
 
@@ -63,8 +69,34 @@ public class MainActivity extends AppCompatActivity {
             case R.id.btnPrevious:
                 send(new CmdPrevious());
                 break;
+
+            case R.id.btnNormal:
+                //创建普通节点
+                String nodeNor = et_node.getText().toString().trim();
+                if (nodeNor != null)
+                    createNote(new NoteNormal(nodeNor));
+                break;
+            case R.id.btnSub:
+                //创建可订阅节点
+                String nodeSub = et_node.getText().toString().trim();
+                if (nodeSub != null)
+                    createNote(new NoteSub(nodeSub));
+                break;
         }
     }
+
+    /**
+     * 创建节点
+     *
+     * @param note
+     */
+    public void createNote(INote note) {
+        Intent intent = new Intent(Const.ACTION_COAP_NOTE);
+        intent.putExtra(Const.KEY_CMD, note);
+        sendBroadcast(intent);
+    }
+
+
 
     private BroadcastReceiver coapMessageReceiver = new BroadcastReceiver() {
 

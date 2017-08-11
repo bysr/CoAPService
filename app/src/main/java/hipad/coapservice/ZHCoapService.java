@@ -12,7 +12,6 @@ import android.os.IBinder;
 import android.util.Log;
 
 
-
 import org.eclipse.californium.core.CoapServer;
 import org.eclipse.californium.core.network.config.NetworkConfig;
 import org.eclipse.californium.proxy.DirectProxyCoapResolver;
@@ -25,6 +24,9 @@ import java.io.IOException;
 import java.io.Serializable;
 
 import hipad.coapservice.cmd.ICmd;
+import hipad.coapservice.note.INote;
+import hipad.coapservice.note.NoteNormal;
+import hipad.coapservice.note.NoteSub;
 
 public class ZHCoapService extends Service {
     private static final String TAG = "WLCoapService";
@@ -51,8 +53,10 @@ public class ZHCoapService extends Service {
         super.onCreate();
 
         initCoapResource();
-
+        //监听网络状态变化
         IntentFilter intentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        //监听创建节点命令
+        intentFilter.addAction(Const.ACTION_COAP_NOTE);
         registerReceiver(connectReceiver, intentFilter);
     }
 
@@ -119,22 +123,44 @@ public class ZHCoapService extends Service {
     private BroadcastReceiver connectReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            State state = State.DISCONNECTED;
-            if (intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
-                ConnectivityManager contectivityMananger = (ConnectivityManager) context
-                        .getSystemService(Context.CONNECTIVITY_SERVICE);
-                NetworkInfo mNetworkInfo = contectivityMananger.getActiveNetworkInfo();
-                if (mNetworkInfo != null && mNetworkInfo.isConnected()) {
-                    state = mNetworkInfo.getState();
-                }
+            switch (intent.getAction()) {
+                /*网络状态变化*/
+                case ConnectivityManager.CONNECTIVITY_ACTION:
+                    State state = State.DISCONNECTED;
+                    if (intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
+                        ConnectivityManager contectivityMananger = (ConnectivityManager) context
+                                .getSystemService(Context.CONNECTIVITY_SERVICE);
+                        NetworkInfo mNetworkInfo = contectivityMananger.getActiveNetworkInfo();
+                        if (mNetworkInfo != null && mNetworkInfo.isConnected()) {
+                            state = mNetworkInfo.getState();
+                        }
+                    }
+                    if (state == State.CONNECTED && !isConnected) {
+                        isConnected = true;
+                        startCoapServer();
+                    } else if (state == State.DISCONNECTED) {
+                        isConnected = false;
+                        stopCoapServer();
+                    }
+                    break;
+
+                case Const.ACTION_COAP_NOTE:
+                    Serializable serializable = intent.getSerializableExtra(Const.KEY_CMD);
+                    if (serializable != null && serializable instanceof NoteNormal) {
+                        INote note = (INote) serializable;
+
+                        ZHQueryResource noteResource = new ZHQueryResource(getApplicationContext(), note.getNoteName());
+                        mCoapServer.add(noteResource);
+                    } else if (serializable != null && serializable instanceof NoteSub) {
+                        INote note = (INote) serializable;
+                        ZHTimeObserve noteResource = new ZHTimeObserve(note.getNoteName());
+                        mCoapServer.add(noteResource);
+                    }
+
+                    break;
             }
-            if (state == State.CONNECTED && !isConnected) {
-                isConnected = true;
-                startCoapServer();
-            } else if (state == State.DISCONNECTED) {
-                isConnected = false;
-                stopCoapServer();
-            }
+
+
         }
     };
 
